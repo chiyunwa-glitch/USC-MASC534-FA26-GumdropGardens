@@ -34,8 +34,9 @@ button:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-
 button.p{background:var(--accent);border-color:var(--accent);color:#fff;font-family:Fredoka,sans-serif;font-weight:500;font-size:1.05rem}
 .nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
-@media(max-width:700px){.two{grid-template-columns:1fr}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.cook-layout{grid-template-columns:minmax(180px,.8fr) minmax(0,1.2fr)!important}.cook-controls{min-width:0}.cook-readings{min-width:0;overflow-wrap:anywhere}.cook-readings .read{font-size:clamp(1.6rem,5vw,2.4rem)}.cook-timer{background:var(--track);border:2px solid var(--line);border-radius:14px;padding:10px 14px;margin:12px 0;font:500 1.1rem Fredoka,sans-serif}.cook-timer strong{font-size:1.4rem}.feedback{margin:12px 0;background:var(--track);padding:10px 12px;border-radius:12px}.sensory-note{background:#fff3cd;color:#543b00;border:1px solid #e7c96a;border-radius:12px;padding:10px;margin:10px 0}.unlock{border:2px dashed var(--gold);border-radius:14px;padding:12px;margin-top:12px}.unlock button{margin:4px}.param-guide{background:var(--track);border-radius:14px;padding:12px;margin:10px 0}.param-guide p{margin:6px 0}.param-guide table{font-size:14px}
+@media(max-width:700px){.two{grid-template-columns:1fr}.cook-layout{grid-template-columns:1fr!important}}
 .jars{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
 .jar{border:2px solid var(--line);border-radius:16px;padding:8px;text-align:center}
 .jar .g{width:38px;height:56px;margin:2px auto 4px;border:3px solid var(--line);border-radius:6px 6px 12px 12px;position:relative;overflow:hidden}
@@ -43,7 +44,7 @@ button.p{background:var(--accent);border-color:var(--accent);color:#fff;font-fam
 .jar b{display:block;font:500 .9rem Fredoka,sans-serif}
 .jar small{color:var(--mute)}
 .jar .pm{display:flex;gap:6px;justify-content:center;margin-top:4px}
-.jar .pm button{padding:0;width:32px;height:32px;border-radius:50%;font:700 1.1rem Fredoka,sans-serif}
+.jar .pm button{padding:0;width:32px;height:32px;border-radius:50%;font:700 1.1rem Fredoka,sans-serif}.jar .exact{display:flex;justify-content:center;gap:4px;align-items:center;margin-top:6px}.jar .exact input{width:74px;min-width:0;padding:4px 6px;border:1px solid var(--line);border-radius:8px;text-align:center;font:700 .9rem Nunito,sans-serif;color:var(--ink);background:var(--bg)}.jar .exact button{border-radius:8px;padding:3px 7px;font-size:.8rem}.shelf-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,300px);gap:14px;align-items:start;margin-bottom:10px}.shelf-head .lead{margin-bottom:0}.shelf-inventory{position:sticky;top:8px;background:var(--track);border:2px solid var(--line);border-radius:14px;padding:10px;max-height:240px;overflow:auto}.shelf-inventory h3{font-size:1rem;margin:0 0 6px}.shelf-inventory ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:4px 8px}.shelf-inventory li{font-size:12px;display:flex;justify-content:space-between;gap:6px}.shelf-inventory .locked{opacity:.55}.shelf-inventory .note{font-size:11px;margin:6px 0 0}@media(max-width:700px){.shelf-head{grid-template-columns:1fr}.shelf-inventory{position:static;max-height:180px}}
 .hint{background:var(--track);border-radius:12px;padding:8px 12px;margin:0 0 12px;font-size:14px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
 .card{border-radius:18px;padding:12px 8px;display:grid;justify-items:center;gap:2px;text-align:center}
@@ -171,15 +172,16 @@ input[type=range]{accent-color:var(--accent)}
 <div class="mascot"><div class="mm" id="mm"></div><div class="bubble" id="say2" role="status"></div></div>
 <section class="st" id="st_candy"><h2>Choose your candy</h2><p class="lead">A customer is waiting. Pick the candy you will make, then go shopping for its ingredients.</p><div id="candyUI"></div><div class="nav"><span></span><button class="p" data-go="1">Next: grocery store</button></div></section>
 <section class="st" id="st_store" hidden><h2>Gumdrop Market</h2><p class="lead">Walk the aisles and tap the products on the shelves to drop them in your cart. Match the shopping list, and watch out for lookalikes!</p><div id="storeUI"></div><div class="nav"><button data-go="-1">Back to candy choice</button><button class="p" data-go="1">Next: ingredient shelf</button></div></section>
-<section class="st" id="st_shelf" hidden><h2>Ingredient shelf</h2><p class="lead">Fill your pot. Tap + and − on the jars, or start from a recipe card.</p>
-<div class="row" id="presets"></div><p class="hint" id="hint" hidden></p>
+<section class="st" id="st_shelf" hidden><div class="shelf-head"><div><h2>Ingredient shelf</h2><p class="lead">Choose a recipe card to load a starting mix, or set each ingredient to an exact amount in grams. The +/− buttons adjust by 25 g. For a fully custom mix, choose Free play at the market; in shopping mode, ingredients you did not buy remain locked.</p></div><aside class="shelf-inventory" id="shelfInventory"><h3>🛒 Ingredients in your mix</h3><ul id="shelfMixList"></ul><p class="note" id="shelfMixNote"></p></aside></div>
+<h3>Recipe cards · load a starting mix</h3><div class="row" id="presets"></div><p class="hint" id="hint" hidden></p>
 <div class="two"><div class="jars" id="jars"></div><div class="big" id="potA"></div></div>
 <div class="nav"><button data-go="-1">Back to the market</button><button class="p" data-go="1">Next: cook it</button></div></section>
 
-<section class="st" id="st_pot" hidden><h2>Cooking pot</h2><p class="lead">Hold Heat to raise the temperature. The hotter it gets, the more water boils away, and the harder your candy will set. Stop before it burns.</p>
-<div class="two"><div class="big" id="potB"></div>
-<div><div style="display:flex;gap:14px;align-items:flex-end"><div class="thermo" id="thermo"><div class="tf" id="tf"></div></div>
-<div><div class="read" id="tempOut">100 °C</div><div class="f" id="zone"></div><p class="note" id="moistOut"></p><p class="note" id="tgt" style="font-weight:700;color:var(--ink)"></p></div></div>
+<section class="st" id="st_pot" hidden><h2>Cooking pot</h2><p class="lead">Hold Heat to raise the temperature. The hotter it gets, the more water boils away, and the harder your candy will set. Time at temperature matters in real cooking because evaporation continues while heated. In this simplified app, the water estimate is based on temperature only; the timer shows a 10-second target hold, not a separate evaporation-rate model.</p>
+<div class="two cook-layout"><div class="big" id="potB"></div>
+<div class="cook-controls"><div style="display:flex;gap:14px;align-items:flex-end"><div class="thermo" id="thermo"><div class="tf" id="tf"></div></div>
+<div class="cook-readings"><div class="read" id="tempOut">100 °C</div><div class="f" id="zone"></div><p class="note" id="moistOut"></p><p class="note" id="tgt" style="font-weight:700;color:var(--ink)"></p></div></div>
+<div class="cook-timer">Target hold: <strong id="cookTime">0:00</strong> / 0:10 <span id="timerStatus">Heat to the target; the hold timer starts when you reach it.</span></div>
 <div class="heatrow"><button class="p" id="heat">🔥 Hold to heat</button><button id="ease">❄ Hold to ease off</button></div>
 <div class="row"><button class="p" id="goT">🎯 Set to target temp</button><button id="up">+5 °C</button><button id="dn">−5 °C</button><button id="reset">Empty and restart pot</button></div></div></div>
 <div class="nav"><button data-go="-1">Back</button><button class="p" data-go="1">Next: pulling room</button></div></section>
@@ -192,7 +194,7 @@ input[type=range]{accent-color:var(--accent)}
 <section class="st" id="st_mold" hidden><h2>Mold room</h2><p class="lead">Pick a mold and a color. Your candy’s look follows its recipe: glossy glass, cloudy crystals or bubbly foam.</p>
 <div class="two"><div><h3>Mold</h3><div class="cards" id="shapeCards" style="margin-top:8px"></div><h3>Color</h3><div class="row" id="dyes" style="margin-top:8px"></div></div>
 <div class="big" id="candy"></div></div>
-<div class="nav"><button data-go="-1">Back</button><button class="p" data-go="1">Next: microscope lab</button></div></section>
+<div class="unlock"><b>Shape unlocks</b><p class="note" id="unlockStatus">Earn coins in the Tasting room to unlock extra molds. Current shapes: Drop (free); Star (8 coins); Bear (12 coins); Lollipop (15 coins).</p><div id="unlockControls"></div></div><div class="nav"><button data-go="-1">Back</button><button class="p" data-go="1">Next: microscope lab</button></div></section>
 
 <section class="st" id="st_lab" hidden><h2>Microscope lab</h2><p class="lead">See inside your candy. Save it to the display shelf, change the recipe or method, then compare the two.</p>
 <div class="two"><figure><canvas id="c1" width="360" height="270" role="img" aria-label="Simulated SEM image of your current candy"></canvas><figcaption id="cap1"></figcaption></figure>
@@ -208,8 +210,8 @@ input[type=range]{accent-color:var(--accent)}
 <div class="row" id="modes"></div>
 <div class="two"><figure><canvas id="spmC" width="512" height="512" role="img" aria-label="Scanning electron microscope image of your candy"></canvas><figcaption id="spmCap"></figcaption></figure>
 <div><canvas id="spmS" width="400" height="170" role="img" aria-label="Side view of the electron beam hitting the candy surface"></canvas><p class="note" id="spmRead">After a scan, hover or drag over the image to move the beam spot.</p><table id="spmT"></table></div></div>
-<p class="note" id="spmNote"></p><p class="note" id="clar" style="font-weight:700;color:var(--ink)"></p><table id="emT" style="width:100%;font-size:14px;margin:8px 0"></table><p class="note">Display resolution is how many pixels the image has. Resolving power is the smallest detail the beam and detector can separate, and it does not change when you change pixels. Beam current and dwell time set the noise, charging and resolving power (ref. 22), and noise is added on top of a clean image, so a slower scan removes grain without blurring. A feature is usually visible when SNR is at least 5 (Rose criterion, ref. 8). EDS is a simulated carbon X-ray map of an uncoated sample, because a carbon coat would add its own carbon (ref. 23). Scan again after changing settings.</p>
-<p class="note">Simulated scan. The surface is generated from your recipe and method, and the nanometer values are illustrative, not measured. Beam energy, current and detector advice follows refs. 7–23 in the Microscope lab; the clarity score is a simplified game rule.</p>
+<div class="param-guide"><h3>How the SEM settings affect this simulated result</h3><div id="semExplain" class="note">Scan once to see the parameter-by-parameter explanation.</div></div><div class="param-guide"><h3>Analytical range check (calculation check, not experimental validation)</h3><p>Direct substitution into the range expression using the app’s stated sucrose parameters (A = 13.3, Z = 6.7, ρ = 1.59 g/cm³) gives:</p><table><tr><th>Beam energy</th><th>Exponent used</th><th>Direct calculation</th><th>App display</th><th>Difference</th></tr><tr><td>1 kV</td><td>1.35</td><td>0.04256 µm = 42.56 nm</td><td>43 nm</td><td>1.0%</td></tr><tr><td>15 kV</td><td>1.67</td><td>3.9179 µm</td><td>3.93 µm</td><td>0.3%</td></tr></table><p class="note">This checks arithmetic consistency with the implemented equation and constants. It does not validate the equation’s accuracy for candy or low beam energies against measured data.</p></div><p class="note" id="spmNote"></p><p class="note" id="clar" style="font-weight:700;color:var(--ink)"></p><table id="emT" style="width:100%;font-size:14px;margin:8px 0"></table><p class="note">Display resolution is how many pixels the image has. Resolving power is the smallest detail the beam and detector can separate, and it does not change when you change pixels. Beam current and dwell time set the noise, charging and resolving power (ref. 22), and noise is added on top of a clean image, so a slower scan removes grain without blurring. A feature is usually visible when SNR is at least 5 (Rose criterion, ref. 8). EDS is a simulated carbon X-ray map of an uncoated sample, because a carbon coat would add its own carbon (ref. 23). Scan again after changing settings.</p>
+<p class="note">Simulated scan. The surface is generated from your recipe and method, and nanometer values are illustrative, not measured. Beam energy, current and detector advice follows refs. 7–23 in the Microscope lab; the clarity score is a simplified game rule.</p>
 <div class="nav"><button data-go="-1">Back</button><button class="p" data-go="1">Next: nano to mouth</button></div></section>
 <section class="st" id="st_mouth" hidden><h2>From nano to mouth</h2><p class="lead">Every taste and texture you notice starts with something tiny. Follow the chain from your recipe, down to the nanoscale structure, and back up to what you would feel in a bite.</p>
 <div class="row"><label>Serving temperature <input type="range" id="ts" min="5" max="40" step="1" value="25"> <output id="tsO">25 °C</output></label><span class="note" style="margin:0">Try 37 °C, the temperature of your mouth.</span></div>
@@ -229,8 +231,8 @@ input[type=range]{accent-color:var(--accent)}
 <p class="note">All parameters are simplified and illustrative. Use them to see trends, and check textbook values before quoting numbers.</p></details>
 <div class="nav"><button data-go="-1">Back</button><button class="p" data-go="1">Next: tasting room</button></div></section>
 
-<section class="st" id="st_taste" hidden><h2>Tasting room</h2><p class="lead">A customer has an order. Does your candy match? Earn coins for every requirement you meet.</p>
-<div class="two"><div><div class="order"><h3 id="who"></h3><p id="say" style="margin:4px 0"></p><ul class="chk" id="chk"></ul></div>
+<section class="st" id="st_taste" hidden><h2>Tasting room</h2><p class="lead">A customer has an order. Does your candy match? Earn coins for every requirement you meet.</p><div class="feedback"><b>Why did I lose stars?</b> The score converts the fraction of requirements passed to 0–3 stars: round(passed ÷ total × 3). After serving, the result names the unmet checks; a perfect score earns 30 coins. Stars are based on model rules, not real tasting feedback. <label for="starFeedback">Feedback (recorded only on this page):</label> <select id="starFeedback"><option value="">Choose feedback</option><option>Timer / cooking time</option><option>Temperature target</option><option>How stars are awarded</option><option>Something else</option></select> <textarea id="feedbackText" rows="2" placeholder="Optional comment" aria-label="Optional feedback comment"></textarea> <button id="sendFeedback">Record feedback</button> <span id="feedbackMsg" role="status"></span></div>
+<div class="two"><div><div class="order"><h3 id="who"></h3><p id="say" style="margin:4px 0"></p><ul class="chk" id="orderChecks"></ul></div>
 <button class="p" id="serve">Serve this candy</button> <button id="next" hidden>Next customer</button><div class="res" id="res"></div></div>
 <div class="big" id="candyT"></div></div>
 <div class="nav"><button data-go="-1">Back</button><span></span></div></section>
@@ -281,7 +283,9 @@ const ORD=[
 const $=id=>document.getElementById(id);
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const amt={};ING.forEach(i=>amt[i[0]]=0);
-let temp=100,cool=1,beat=0,shape="round",dye="natural",cur=0,coins=0,oi=0,heat=0,cmp=-1,S;
+let temp=100,cool=1,beat=0,shape="round",dye="natural",cur=0,coins=0,oi=0,heat=0,cmp=-1,S,cookSeconds=0,cookDone=false,cookTimerStarted=false;
+const feedbackEntries=[];function resetCookTimer(){cookSeconds=0;cookDone=false;cookTimerStarted=false;}
+const UNLOCK_COST={star:8,bear:12,lolli:15};const unlockedShapes=new Set(["round"]);
 const shelf=[];
 const PTS=[[100,.25],[112,.14],[120,.09],[150,.03],[165,.015],[180,.01]];
 function moistAt(T){for(let i=1;i<PTS.length;i++){if(T<=PTS[i][0]){const a=PTS[i-1],b=PTS[i];return a[1]+(b[1]-a[1])*(T-a[0])/(b[0]-a[0])}}return .01}
@@ -462,7 +466,10 @@ function bar(n,c,v,note){return `<div class="bar"><div class="t"><span>${n}</spa
 function zone(){return temp<112?"Syrup stage":temp<120?"Soft ball":temp<135?"Firm ball":temp<150?"Hard ball":temp<=165?"Hard crack":"Burnt!"}
 function refresh(){
  const s=S=compute();
- ING.forEach(i=>{const g=amt[i[0]],jr=$("a_"+i[0]).closest(".jar"),lk=!!bought&&!bought.has(i[0]);jr.style.opacity=lk?.35:1;jr.querySelectorAll("button").forEach(b=>b.disabled=lk);$("a_"+i[0]).textContent=lk?"not bought":g+" g";$("f_"+i[0]).style.height=clamp(g/300)*100+"%"});
+ if($("cookTime")){const mm=Math.floor(cookSeconds/60),ss=Math.floor(cookSeconds%60);$("cookTime").textContent=mm+":"+String(ss).padStart(2,"0");$("timerStatus").textContent=cookDone?"All done! Target hold complete.":cookTimerStarted?"Hold at target temperature; timer pauses outside the target band.":"Heat to the target; the hold timer starts when you reach it.";}
+ if($("unlockStatus")){const labels={round:"Drop",star:"Star",bear:"Bear",lolli:"Lollipop"};$("unlockStatus").textContent="Unlocked: "+[...unlockedShapes].map(x=>labels[x]).join(", ")+". Earn coins in Tasting to unlock more shapes.";}
+ ING.forEach(i=>{const g=amt[i[0]],jr=$("a_"+i[0]).closest(".jar"),lk=!!bought&&!bought.has(i[0]);jr.style.opacity=lk?.45:1;jr.querySelectorAll("button,input").forEach(b=>b.disabled=lk);jr.querySelector(`input[data-grams="${i[0]}"]`).value=g;$("a_"+i[0]).textContent=lk?"not bought":g+" g";$("f_"+i[0]).style.height=clamp(g/300)*100+"%"});
+ if($("shelfMixList")){const active=bought!==null?bought:new Set(ING.map(i=>i[0]));$("shelfMixList").innerHTML=ING.map(i=>{const ok=active.has(i[0]),name=i[1],icon=EMO[i[0]]||"•";return `<li class="${ok?"":"locked"}"><span>${icon} ${name}</span><b>${ok?amt[i[0]]+" g":"locked"}</b></li>`}).join("");$("shelfMixNote").textContent=bought!==null?(bought.size?"Checked out from market · amounts update as you fill the pot.":"No ingredients purchased. Use Free play at the market to unlock all jars."):BASK.size?"All jars are currently unlocked. Your market cart is not checked out yet.":"All ingredients currently unlocked. Check out at the market to restrict the selection.";}
  $("potA").innerHTML=potSVG(s,"a");$("potB").innerHTML=potSVG(s,"b");
  $("tf").style.height=clamp((temp-100)/80)*100+"%";
  $("tempOut").textContent=Math.round(temp)+" °C";$("zone").textContent=zone();if(cur==3&&zone()!==lz){lz=zone();say(ZM[lz])}
@@ -483,7 +490,7 @@ function lab(s){
 }
 function taste(s){
  const o=ORD[oi%ORD.length];$("who").textContent=["🧪","🎭","⚓","🐣","🔬","👑","🥁","🧸","🧣"][oi%9]+" "+o[0];$("say").textContent="“"+o[1]+"”";
- $("chk").innerHTML=o[2].map(r=>`<li>${s.F&&r[1](s)?"✅":"⬜"} ${r[0]}</li>`).join("");
+ $("orderChecks").innerHTML=o[2].map(r=>`<li>${s.F&&r[1](s)?"⭐ Passed":"☆ Not met"} — ${r[0]}</li>`).join("");
 }
 function go(n){
  cur=Math.max(0,Math.min(ST.length-1,n));
@@ -492,30 +499,34 @@ function go(n){
 }
 function build(){$("mm").innerHTML=mushroomSVG();decor();
  $("belt").innerHTML=ST.map((s,i)=>`<button class="stn" id="b_${s[0]}" data-to="${i}"><span>${s[2]}</span>${s[1]}</button>`).join("");
- $("jars").innerHTML=ING.map(i=>`<div class="jar"><div class="g"><i id="f_${i[0]}" style="background:${i[9]};${i[0]==="starch"?"box-shadow:inset 0 0 0 1px #ccc":""}"></i></div><b>${i[1]}</b><small id="a_${i[0]}">0 g</small><div class="pm"><button data-i="${i[0]}" data-d="-25" aria-label="Less ${i[1]}">−</button><button data-i="${i[0]}" data-d="25" aria-label="More ${i[1]}">+</button></div></div>`).join("");
- Object.keys(PRE).forEach(k=>{const b=document.createElement("button");b.textContent="📜 "+k;b.onclick=()=>{ING.forEach(i=>amt[i[0]]=(!bought||bought.has(i[0]))?(PRE[k][0][i[0]]||0):0);temp=100;$("hint").hidden=false;$("hint").textContent="Recipe tip: "+PRE[k][1];refresh()};$("presets").appendChild(b)});
+ $("jars").innerHTML=ING.map(i=>`<div class="jar"><div class="g"><i id="f_${i[0]}" style="background:${i[9]};${i[0]==="starch"?"box-shadow:inset 0 0 0 1px #ccc":""}"></i></div><b>${i[1]}</b><small id="a_${i[0]}">0 g</small><div class="pm"><button data-i="${i[0]}" data-d="-25" aria-label="Less ${i[1]}">−</button><button data-i="${i[0]}" data-d="25" aria-label="More ${i[1]}">+</button></div><div class="exact"><input type="number" min="0" max="1000" step="1" value="0" data-grams="${i[0]}" aria-label="Exact grams of ${i[1]}"><span>g</span><button type="button" data-set-grams="${i[0]}">Set</button></div></div>`).join("");
+ Object.keys(PRE).forEach(k=>{const b=document.createElement("button");b.textContent="📜 "+k;b.onclick=()=>{ING.forEach(i=>amt[i[0]]=(!bought||bought.has(i[0]))?(PRE[k][0][i[0]]||0):0);temp=100;resetCookTimer();$("hint").hidden=false;$("hint").textContent="Recipe tip: "+PRE[k][1];refresh()};$("presets").appendChild(b)});
  mk("coolCards",[["0","🧊","Quick","Poured on a cold slab"],["1","🫕","Slow","Left to cool in the pot"]],0,v=>cool=+v);
  mk("beatCards",[["0","🛑","Undisturbed","Leave it alone"],["1","🌀","Pulled or beaten","Works in small crystals"],["2","🌬️","Whipped","Traps lots of air"]],0,v=>beat=+v);
- mk("shapeCards",[["round","🍬","Drop","10 g piece"],["star","⭐","Star","8 g piece"],["bear","🧸","Bear","3 g piece"],["lolli","🍭","Lollipop","15 g piece"]],0,v=>shape=v);
+ mk("shapeCards",[["round","🍬","Drop","10 g piece"],["star","⭐","Star","8 g piece"],["bear","🧸","Bear","3 g piece"],["lolli","🍭","Lollipop","15 g piece"]],0,v=>{if(unlockedShapes.has(v))shape=v;else say("Unlock this mold with coins below.")});
+ renderUnlocks();
  $("dyes").innerHTML=[["natural","Natural","conic-gradient(#e9d9b8,#cd7d1e,#e9d9b8)"],...Object.entries(DYE).map(e=>[e[0],e[0],e[1]])].map(d=>`<button class="dye" data-v="${d[0]}" aria-label="${d[1]}" style="background:${d[2]}"></button>`).join("");
  $("thermo").insertAdjacentHTML("beforeend",[[112,"Soft ball"],[120,"Firm ball"],[150,"Hard crack"],[165,"Burnt!"]].map(z=>`<div class="tk" style="bottom:${(z[0]-100)/80*100}%">${z[0]} °C ${z[1]}</div>`).join(""));
  document.addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.setGrams){const k=t.dataset.setGrams,input=document.querySelector(`input[data-grams="${k}"]`),v=Number(input.value);if(!Number.isFinite(v)||v<0||v>1000){say("Enter an amount from 0 to 1000 g.");return}amt[k]=v;resetCookTimer();refresh();return;}
+  if(t.dataset.unlock){const sh=t.dataset.unlock,cost=UNLOCK_COST[sh];if(coins>=cost){coins-=cost;unlockedShapes.add(sh);$("coins").textContent=coins;shape=sh;renderUnlocks();refresh();say("New mold unlocked!");}else say("Need "+(cost-coins)+" more coins to unlock this mold.");return;}
   if(t.dataset.go)go(cur+ +t.dataset.go);
   else if(t.dataset.to)go(+t.dataset.to);
-  else if(t.dataset.d){const k=t.dataset.i;amt[k]=clamp(amt[k]+ +t.dataset.d,0,300);refresh()}
+  else if(t.dataset.d){const k=t.dataset.i;amt[k]=clamp(amt[k]+ +t.dataset.d,0,1000);resetCookTimer();refresh()}
   else if(t.classList.contains("dye")){dye=t.dataset.v;refresh()}
  });
  const hold=(id,v)=>{const b=$(id);b.addEventListener("pointerdown",e=>{e.preventDefault();heat=v});["pointerup","pointerleave","pointercancel"].forEach(ev=>b.addEventListener(ev,()=>{if(heat===v)heat=0}));
   b.addEventListener("keydown",e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();heat=v}});b.addEventListener("keyup",()=>{if(heat===v)heat=0})};
  hold("heat",1);hold("ease",-1);
- $("goT").onclick=()=>{if(!compute().F){say("Add ingredients on the shelf first!");return}temp=recT()[0];refresh()};$("up").onclick=()=>{temp=Math.min(180,temp+5);refresh()};$("dn").onclick=()=>{temp=Math.max(100,temp-5);refresh()};
- $("reset").onclick=()=>{temp=100;ING.forEach(i=>amt[i[0]]=0);$("hint").hidden=true;go(0)};
+ $("goT").onclick=()=>{if(!compute().F){say("Add ingredients on the shelf first!");return}temp=recT()[0];resetCookTimer();refresh()};$("up").onclick=()=>{temp=Math.min(180,temp+5);resetCookTimer();refresh()};$("dn").onclick=()=>{temp=Math.max(100,temp-5);resetCookTimer();refresh()};
+ $("reset").onclick=()=>{temp=100;resetCookTimer();ING.forEach(i=>amt[i[0]]=0);$("hint").hidden=true;go(0)};
+ $("sendFeedback").onclick=()=>{const topic=$("starFeedback").value,comment=$("feedbackText").value.trim();if(!topic&&!comment){$("feedbackMsg").textContent="Choose a topic or enter a comment first.";return}feedbackEntries.push({topic,comment});$("feedbackText").value="";$("feedbackMsg").textContent="Recorded in this page session only; it is not sent or saved."};
  $("save").onclick=()=>{const s=compute();if(!s.F)return;shelf.push({name:"Candy #"+(shelf.length+1),s});if(shelf.length>6)shelf.shift();cmp=shelf.length-1;opts();refresh();say("Tucked "+shelf[cmp].name+" on the display shelf! Change something, then compare.");burst(10)};
  $("cmp").onchange=e=>{cmp=+e.target.value;refresh()};
  $("serve").onclick=()=>{const o=ORD[oi%ORD.length],s=compute();if(!s.F){$("res").textContent="The pot is empty. Go back and make a candy first.";return}
   const n=o[2].filter(r=>r[1](s)).length,st=Math.round(n/o[2].length*3);coins+=st*10;$("coins").textContent=coins;
-  $("res").textContent=(st==3?"Perfect! ":st>0?"Nice try. ":"Not quite. ")+"★".repeat(st)+"☆".repeat(3-st)+" You earned "+st*10+" coins.";
+  const failed=o[2].filter(r=>!r[1](s)).map(r=>r[0]);$("res").textContent=(st==3?"Perfect! ":st>0?"Nice try. ":"Not quite. ")+"★".repeat(st)+"☆".repeat(3-st)+" You earned "+st*10+" coins."+(failed.length?" Stars missed because these checks did not pass: "+failed.join("; ")+".":"");
   say(st==3?"Squeee! A perfect candy! The customer is dancing!":st>0?"Almost! Check the list and tweak your recipe.":"Hmm, that’s not what they asked for. Back to the pot!");if(st==3)burst(24);else if(st>0)burst(8);$("serve").hidden=true;$("next").hidden=false};
  $("next").onclick=()=>{oi++;$("res").textContent="";$("serve").hidden=false;$("next").hidden=true;refresh()};
  opts();
@@ -574,7 +585,9 @@ function storeInit(){storeBuild();candyBuild();
 function emInfo(){const hi=+$("tip").value,I=[10,50,500][+$("bcur").value],f=+$("spd").value,N=[256,512,1024][+$("rsl").value],ps=5000/N,wd=[4,10,20][+$("wd").value],R=hi?3930:43,sp=Math.round(16*Math.pow(I/10,.375)*(hi?1:2.5)*Math.sqrt(wd/5))/10,D=SM.data,k=(I/10)*(f?20:80)*(wd==4?1.15:1),h=Math.hypot,nm=v=>v>=1000?(v/1000).toFixed(1)+" µm":Math.round(v)+" nm";
  const sn=a=>{if(!D)return null;let t=0,c=0;for(let i=0;i<a.length;i+=7){t+=a[i];c++}return Math.sqrt(t/c*k)};
  const rw=(n,res,a)=>{const v=sn(a);return`<tr><td>${n}</td><td>${nm(res)}</td><td>${v==null?"scan first":v.toFixed(1)}</td><td>${v==null?"—":v>=5?"✅ clear":"⚠️ grainy"}</td></tr>`};
- $("emT").innerHTML=`<tr><th>Detector</th><th>Resolving power</th><th>SNR</th><th>Rose ≥ 5</th></tr>`+rw("Secondary (SE)",h(sp,hi?60:3),D&&D.SE0)+rw("Backscatter (BSE)",h(sp,.12*R),D&&D.BS0)+rw("Carbon (EDS)",h(sp,.25*R),D&&D.C0)+`<tr><td colspan="4">Display: ${N}×${N} pixels, ${nm(ps)} per pixel (image size only) · spot about ${sp} nm · beam range in sugar about ${nm(R)} · working distance ${wd} mm</td></tr>`}
+ $("emT").innerHTML=`<tr><th>Detector</th><th>Resolving power</th><th>SNR</th><th>Rose ≥ 5</th></tr>`+rw("Secondary (SE)",h(sp,hi?60:3),D&&D.SE0)+rw("Backscatter (BSE)",h(sp,.12*R),D&&D.BS0)+rw("Carbon (EDS)",h(sp,.25*R),D&&D.C0)+`<tr><td colspan="4">Display: ${N}×${N} pixels, ${nm(ps)} per pixel (image size only) · spot about ${sp} nm · beam range in sugar about ${nm(R)} · working distance ${wd} mm</td></tr>`;
+ const det=["SE emphasizes surface slopes and edges; bright rims/edges and dark pores follow the simulated topography.","BSE emphasizes mean-atomic-number contrast; in this candy model it is qualitative composition contrast, not a direct density map.","EDS mode is a simulated carbon X-ray map; brighter pixels indicate the model-assigned carbon-rich regions, not measured composition."][SM.mode];
+ $("semExplain").innerHTML=`<p><b>Selected detector:</b> ${det}</p><p><b>Settings → expected effect:</b> ${hi?"15 kV increases interaction depth and the modeled blur; 1 kV is more surface sensitive.":"1 kV reduces interaction depth and modeled blur; it can improve surface sensitivity."} ${I<50?"Low current means fewer electrons per pixel and noisier signal.":I>50?"High current improves count statistics in this toy model but can increase charging/damage risk.":"Medium current balances modeled signal and noise."} ${f?"Fast scan shortens dwell time, increasing simulated noise.":"Careful scan uses longer dwell time, reducing simulated noise."} ${wd===20?"Long working distance enlarges the modeled spot.":"Shorter working distance gives a smaller modeled spot."} ${N===256?"256² pixels give coarser sampling.":N===1024?"1024² pixels sample more finely, but cannot overcome the beam-limited resolution.":"512² is intermediate sampling."} ${tl===2?"High tilt adds focus/blur penalty.":tl===1?"Moderate tilt changes the modeled slope response.":"Zero tilt avoids the added tilt penalty."}</p><p><b>Current result:</b> Estimated spot ${sp} nm; penetration range ${nm(R)}; displayed pixel sampling ${nm(ps)}; SNR estimates and Rose ≥ 5 flags appear in the table. These are simplified model outputs; higher pixel count alone does not improve true resolving power.</p>`}
 function emRender(D,tip,fast){
  const N=D.N,ps=5000/N,kv=tip?15:1,I=[10,50,500][+$("bcur").value],tl=+$("tilt").value,th=[0,30,60][tl]*Math.PI/180,sn=Math.sin(th),cs=Math.cos(th),wdi=+$("wd").value,wd=[4,10,20][wdi];
  const spot=1.6*Math.pow(I/10,.375)*(tip?1:2.5)*Math.sqrt(wd/5),R=tip?3930:43,r=rng(D.seed*13+5);
@@ -715,7 +728,7 @@ function mouthView(s){
   card("Nanoscale (model)",[["Matrix modulus",e(s.Em)],["Bulk modulus",e(s.Eb)],["Pull-off force",s.fpull.toFixed(1)+" nN"],["Roughness Ra",Ra]],"Modulus and stickiness come from the recipe model, since an electron beam shows shape and composition, not force. The whole candy adds up crystals, air and fat.")+
   card("In your mouth",[["Bite force",fn(s.Fb)],["Breaks by",s.brittle?"shattering":"squishing"],["Flavor release",s.tau.toFixed(0)+" s"]],"Bite force follows stiffness. Grit appears when crystals are bigger than about 20 µm.");
  const q=cmp>=0&&shelf[cmp]?shelf[cmp].s:null,v=k=>q?q[k]:null;
- $("mouthBars").innerHTML=bar("Hardness (bite force)",s.hard,v("hard"),fn(s.Fb))+bar("Chewiness",s.chew,v("chew"),Math.round(s.chew))+bar("Smoothness",s.smooth,v("smooth"),Math.round(s.smooth))+bar("Stickiness",clamp(s.fpull/12)*100,q?clamp(q.fpull/12)*100:null,s.fpull.toFixed(1)+" nN")+bar("Slow flavor release",clamp(s.tau/80)*100,q?clamp(q.tau/80)*100:null,s.tau.toFixed(0)+" s")+bar("Sweetness",s.sweet,v("sweet"),Math.round(s.sweet));
+ $("mouthBars").innerHTML=bar("Hardness (bite force)",s.hard,v("hard"),fn(s.Fb))+bar("Chewiness",s.chew,v("chew"),Math.round(s.chew))+bar("Smoothness",s.smooth,v("smooth"),Math.round(s.smooth))+bar("Graininess proxy",100-s.smooth,q?100-q.smooth:null,Math.round(100-s.smooth)+" (model estimate)")+bar("Creaminess proxy",clamp(s.phiF*.7+(1-s.hard/100)*.3)*100,q?clamp(q.phiF*.7+(1-q.hard/100)*.3)*100:null,Math.round(clamp(s.phiF*.7+(1-s.hard/100)*.3)*100)+" (fat + softness model)")+bar("Stickiness",clamp(s.fpull/12)*100,q?clamp(q.fpull/12)*100:null,s.fpull.toFixed(1)+" nN")+bar("Slow flavor release",clamp(s.tau/80)*100,q?clamp(q.tau/80)*100:null,s.tau.toFixed(0)+" s")+bar("Sweetness",s.sweet,v("sweet"),Math.round(s.sweet));
  $("mouthWhy").innerHTML=[
   `Matrix: Tg is ${s.Tg.toFixed(0)} °C and you serve at ${TS} °C, so T − Tg is ${s.dT.toFixed(0)} K. ${s.dT<-5?"The sugar is a glass, stiff at the nanoscale.":s.dT<15?"The sugar is near its glass transition, so it is leathery.":"The sugar is above its glass transition, so it flows and feels soft."}`,
   `Bite: a nanoscale modulus of ${e(s.Em)} becomes ${e(s.Eb)} for the whole candy after crystals, fat and air. A 10 mm² bite takes about ${fn(s.Fb)}, and the candy ${s.brittle?"shatters":"squishes"}.`,
@@ -758,6 +771,7 @@ function spmView(){
  $("spmT").innerHTML=`<tr><th>Roughness</th><th>Scan</th>${q?"<th>Shelf</th>":""}</tr>`+[["Ra (average)","Ra"],["Rq (RMS)","Rq"],["Rz (peak to valley)","Rz"]].map(r=>`<tr><td>${r[0]}</td><td>${f(st?st[r[1]]:null)}</td>${q?`<td>${f(q[r[1]])}</td>`:""}</tr>`).join("");
  if(!SM.run)spmPaint();
 }
+function renderUnlocks(){const box=$("unlockControls");if(!box)return;const label={star:"⭐ Star",bear:"🧸 Bear",lolli:"🍭 Lollipop"};box.innerHTML=Object.entries(UNLOCK_COST).filter(([k])=>!unlockedShapes.has(k)).map(([k,v])=>`<button data-unlock="${k}">Unlock ${label[k]} · ${v} coins</button>`).join("")||"All shapes unlocked!"}
 function spmInit(){
  $("modes").innerHTML=MODES.map((m,i)=>`<button data-m="${i}" aria-pressed="${i===0}">${["🔦","🔆","🧪"][i]} ${m[0]}</button>`).join("");
  $("modes").onclick=e=>{const b=e.target.closest("button");if(!b)return;SM.mode=+b.dataset.m;if(SM.data)colorize();[...$("modes").children].forEach(c=>c.setAttribute("aria-pressed",String(c===b)));spmView()};
@@ -766,8 +780,9 @@ function spmInit(){
 }
 let last=0;
 function loop(ts){const dt=Math.min(.05,(ts-last)/1000);last=ts;const p=temp;
- if(heat===1)temp=Math.min(180,temp+24*dt);else if(heat===-1)temp=Math.max(100,temp-16*dt);else if(cur==3)temp=Math.max(100,temp-1*dt);
- if(Math.abs(temp-p)>.01)refresh();requestAnimationFrame(loop)}
+ if(heat===1){if(cur===3&&compute().F){const target=recT()[0];cookTimerStarted=true;if(temp<target)temp=Math.min(target,temp+8*dt);else if(temp>target+1)temp=Math.max(target,temp-4*dt);if(Math.abs(temp-target)<=1&&!cookDone){cookSeconds+=dt;if(cookSeconds>=10){cookDone=true;cookSeconds=10;heat=0;say("All done! Target temperature held for 10 seconds.");}}}else temp=Math.min(180,temp+8*dt);}
+ else if(heat===-1)temp=Math.max(100,temp-12*dt);else if(cur==3)temp=Math.max(100,temp-0.5*dt);
+ if(Math.abs(temp-p)>.01)refresh();if(cookTimerStarted){const mm=Math.floor(cookSeconds/60),ss=Math.floor(cookSeconds%60);$("cookTime").textContent=mm+":"+String(ss).padStart(2,"0");$("timerStatus").textContent=cookDone?"All done! Target hold complete.":"Hold at target temperature; timer pauses outside the target band.";}requestAnimationFrame(loop)}
 build();spmInit();$("ts").oninput=e=>{TS=+e.target.value;refresh()};go(0);requestAnimationFrame(loop);requestAnimationFrame(spmFrame);
 storeInit();drawRefs();
 </script>
